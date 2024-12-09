@@ -21,3 +21,7 @@ func GetApiKey() string {
 	godotenv.Load()
 	return ApiKey + os.Getenv("apikey")
 }
+
+func NewPointer[T any](value T) *T {
+	return &value
+}
