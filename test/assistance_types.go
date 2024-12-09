@@ -1,4 +1,4 @@
-package qwen
+package test
 
 type Assistant struct {
 	Model        string           `json:"model"`

@@ -1,4 +1,4 @@
-package qwen
+package test
 
 //var ApiKey = "Bearer " + os.Getenv("apikey")
 

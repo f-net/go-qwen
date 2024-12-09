@@ -1,10 +1,11 @@
-package qwen
+package test
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/sashabaranov/go-openai"
+	"qwen/utils"
 	"testing"
 )
 
@@ -22,7 +23,7 @@ func TestCreateAssistant(t *testing.T) {
 		Type:     "code_interpreter",
 		Function: nil,
 	})
-	client := GetAssistantClient()
+	client := utils.GetAssistantClient()
 
 	var assistant openai.Assistant
 	var assistantRequest = openai.AssistantRequest{
@@ -54,7 +55,7 @@ func TestUpdateAssistant(t *testing.T) {
 		Type:     "code_interpreter",
 		Function: nil,
 	})
-	client := GetAssistantClient()
+	client := utils.GetAssistantClient()
 	var assistantRequest = openai.AssistantRequest{
 		Model:        model,
 		Name:         &name,
@@ -72,7 +73,7 @@ func TestUpdateAssistant(t *testing.T) {
 func TestGetAssistantList(t *testing.T) {
 	limit := 10
 	order := "desc"
-	client := GetAssistantClient()
+	client := utils.GetAssistantClient()
 	assistant, err := client.ListAssistants(context.Background(), &limit, &order, nil, nil)
 	if err != nil {
 		t.Fatal(err)
@@ -85,7 +86,7 @@ func TestGetAssistantList(t *testing.T) {
 // 获取assistant
 func TestGetAssistant(t *testing.T) {
 	assistantId := "asst_348ef069-e95e-4810-aecf-4c2410276023"
-	client := GetAssistantClient()
+	client := utils.GetAssistantClient()
 	assistant, err := client.RetrieveAssistant(context.Background(), assistantId)
 	if err != nil {
 		t.Fatal(err)

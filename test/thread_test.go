@@ -1,10 +1,11 @@
-package qwen
+package test
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/sashabaranov/go-openai"
+	"qwen/utils"
 	"testing"
 )
 
@@ -17,7 +18,7 @@ func TestCreateThread(t *testing.T) {
 		},
 	}
 
-	client := GetAssistantClient()
+	client := utils.GetAssistantClient()
 
 	request := openai.ThreadRequest{
 		Messages: ms,
@@ -31,7 +32,7 @@ func TestCreateThread(t *testing.T) {
 	//thread_7e006a91-c100-4dbe-9622-e6a056fff55d
 }
 func TestGetThread(t *testing.T) {
-	client := GetAssistantClient()
+	client := utils.GetAssistantClient()
 
 	response, err := client.RetrieveThread(context.Background(), "thread_7e006a91-c100-4dbe-9622-e6a056fff55d")
 	if err != nil {
@@ -43,7 +44,7 @@ func TestGetThread(t *testing.T) {
 }
 
 func TestDeleteThread(t *testing.T) {
-	client := GetAssistantClient()
+	client := utils.GetAssistantClient()
 
 	response, err := client.DeleteThread(context.Background(), "thread_cc15ce96-056c-4ede-9ee5-8885c76c2714")
 	if err != nil {
@@ -55,7 +56,7 @@ func TestDeleteThread(t *testing.T) {
 
 func TestModifyThread(t *testing.T) {
 
-	client := GetAssistantClient()
+	client := utils.GetAssistantClient()
 
 	request := openai.ModifyThreadRequest{
 		Metadata: map[string]interface{}{

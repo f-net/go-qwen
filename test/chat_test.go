@@ -1,14 +1,15 @@
-package qwen
+package test
 
 import (
 	"context"
 	"fmt"
 	"github.com/sashabaranov/go-openai"
+	"qwen/utils"
 	"testing"
 )
 
 func TestChatQwen(t *testing.T) {
-	client := GetChatClient()
+	client := utils.GetChatClient()
 	request := openai.ChatCompletionRequest{
 		Model: "qwen-plus",
 		Messages: []openai.ChatCompletionMessage{

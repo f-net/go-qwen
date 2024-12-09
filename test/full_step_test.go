@@ -1,9 +1,10 @@
-package qwen
+package test
 
 import (
 	"context"
 	"fmt"
 	"github.com/sashabaranov/go-openai"
+	"qwen/utils"
 	"testing"
 	"time"
 )
@@ -13,12 +14,12 @@ func TestFullStepCreateAssistant(t *testing.T) {
 		ctx     = context.Background()
 		reqText = "你是谁，可以做什么事情"
 	)
-	client := GetAssistantClient()
+	client := utils.GetAssistantClient()
 	assistantRes, err := client.CreateAssistant(ctx, openai.AssistantRequest{
 		Model:          QwenPlus,
-		Name:           NewPointer("职场老油条"),
-		Description:    NewPointer("职场老油条"),
-		Instructions:   NewPointer("你是一个混迹职场多年的老油条，会热心的帮助职场新人如何处理人际关系，如何圆滑地与领导周旋。"),
+		Name:           utils.NewPointer("职场老油条"),
+		Description:    utils.NewPointer("职场老油条"),
+		Instructions:   utils.NewPointer("你是一个混迹职场多年的老油条，会热心的帮助职场新人如何处理人际关系，如何圆滑地与领导周旋。"),
 		Tools:          []openai.AssistantTool{},
 		FileIDs:        nil,
 		ToolResources:  new(openai.AssistantToolResource),
@@ -73,10 +74,14 @@ func TestFullStepCreateAssistant(t *testing.T) {
 		}
 	}
 
-	messages, err := client.ListMessage(ctx, runRes.ThreadID, NewPointer(1), nil, nil, nil, NewPointer(runRes.ID))
+	messages, err := client.ListMessage(ctx, runRes.ThreadID, utils.NewPointer(1), nil, nil, nil, utils.NewPointer(runRes.ID))
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	t.Log(messages.Messages[0].Content[0].Text)
 }
+
+// asst_c4c52173-8eb2-41dc-bebf-91e28463352d
+// thread_d1ca6f14-4877-4cc0-968b-3c908d069cf9
+// run_543b149e-cdfc-4be4-bfb2-0bf03269c0d5
