@@ -11,5 +11,5 @@ type Assistant struct {
 }
 
 type AssistantTools struct {
-	Type string `json:"type"`
+	Type string `json:"types"`
 }

@@ -6,7 +6,7 @@
 # apikey 生成官方教程
 https://help.aliyun.com/zh/model-studio/getting-started/first-api-call-to-qwen
 
-## ✨ 说明
+## ✨  test 目录下 - 说明
 - utils 中写的是获取实例的方式
 - const 中写的是baseUrl 具体的千问访问url，以及调用时候用到的apiKey （需要自己申请 sk-xxxx 格式）
 - -----------------------------------------------------------------------------------------------------------------

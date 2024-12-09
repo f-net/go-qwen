@@ -25,7 +25,6 @@ func TestCreateAssistant(t *testing.T) {
 	})
 	client := utils.GetAssistantClient()
 
-	var assistant openai.Assistant
 	var assistantRequest = openai.AssistantRequest{
 		Model:        model,
 		Name:         &name,

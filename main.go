@@ -2,12 +2,17 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"qwen/internal/model"
+	"qwen/internal"
+	"qwen/internal/config"
 )
 
 func main() {
-	model.InitMysql()
+	config.InitConfig()
+	config.InitMysql()
+	config.InitOpenaiClient()
 
-	gd := gin.Default()
-	gd.Run(":8000")
+	r := gin.Default()
+	internal.InitRooter(r)
+
+	r.Run(":8000")
 }

@@ -1,7 +1,8 @@
 package types
 
 type Config struct {
-	Mysql Mysql `json:"mysql" yaml:"host"`
+	Mysql   Mysql   `json:"mysql" yaml:"host"`
+	BaiLian BaiLian `json:"baiLian" yaml:"baiLian"`
 }
 
 type Mysql struct {
@@ -10,4 +11,8 @@ type Mysql struct {
 	User     string `json:"user" yaml:"user"`
 	Password string `json:"password" yaml:"password"`
 	DB       string `json:"db" yaml:"db"`
+}
+
+type BaiLian struct {
+	Apikey string `json:"apikey" yaml:"apikey"`
 }

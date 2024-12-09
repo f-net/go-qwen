@@ -1,7 +1,6 @@
-package model
+package config
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
@@ -10,10 +9,10 @@ import (
 )
 
 var db *gorm.DB
+var config = types.Config{}
 var configFileName = "config.yaml"
 
-func InitMysql() {
-	config := types.Config{}
+func InitConfig() {
 	v := viper.New()
 	v.SetConfigFile(configFileName)
 	v.SetConfigType("yaml")
@@ -32,19 +31,4 @@ func InitMysql() {
 	if err = v.Unmarshal(&config); err != nil {
 		fmt.Println(err)
 	}
-
-	var db *sql.DB
-	db, err = sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/",
-		config.Mysql.User,
-		config.Mysql.Password,
-		config.Mysql.Host,
-		config.Mysql.Port))
-	if err != nil {
-		return
-	}
-	defer db.Close()
-}
-
-func GetDB() *gorm.DB {
-	return db
 }
