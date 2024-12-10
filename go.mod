@@ -5,6 +5,7 @@ go 1.23.3
 require (
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/gin-gonic/gin v1.10.0
+	github.com/pkg/errors v0.9.1
 	github.com/sashabaranov/go-openai v1.36.0
 	github.com/spf13/viper v1.19.0
 	gorm.io/gorm v1.25.12

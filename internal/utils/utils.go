@@ -13,3 +13,8 @@ func Swap2Json(data interface{}) json.RawMessage {
 func NewPointer[T any](value T) *T {
 	return &value
 }
+
+func GetTotalPage(total int64, pageSize int) int {
+	pageSize2 := int64(pageSize)
+	return int((total + pageSize2 - 1) / pageSize2)
+}
