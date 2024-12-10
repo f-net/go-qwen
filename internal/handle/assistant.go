@@ -24,6 +24,22 @@ func CreateAssistant(c *gin.Context) {
 
 }
 
+func DeleteAssistant(c *gin.Context) {
+	var req = &types.GetId{}
+	err := c.ShouldBindJSON(req)
+	if err != nil {
+		ErrorResp(c, err)
+		return
+	}
+	err = logic.NewAssistantLogic(config.GetDB()).Delete(context.Background(), req.Id)
+	if err != nil {
+		ErrorResp(c, err)
+		return
+	}
+	SuccessResp(c, "")
+
+}
+
 func UpdateAssistant(c *gin.Context) {
 	var req = &types.UpdateAssistantReq{}
 	err := c.ShouldBindJSON(req)

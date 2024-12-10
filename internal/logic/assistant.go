@@ -15,10 +15,12 @@ import (
 type (
 	assistantLogic struct {
 		assistantRepo repo.IAssistantRepo
+		threadRepo    repo.IThreadRepo
 		aiClient      *openai.Client
 	}
 	IAssistantLogic interface {
 		Create(ctx context.Context, req *types.CreateAssistantReq) error
+		Delete(ctx context.Context, id int64) error
 		Save(ctx context.Context, req *types.UpdateAssistantReq) error
 		First(ctx context.Context, id int64) (*types.GetAssistantResp, error)
 		List(ctx context.Context, req *types.ListAssistantReq) (*types.ListCommonResp, error)
@@ -28,6 +30,7 @@ type (
 func NewAssistantLogic(db *gorm.DB) IAssistantLogic {
 	return &assistantLogic{
 		assistantRepo: repo.NewAssistantRepo(db),
+		threadRepo:    repo.NewThreadRepo(db),
 		aiClient:      config.GetAssistantClient(),
 	}
 }
@@ -55,9 +58,33 @@ func (l *assistantLogic) Create(ctx context.Context, req *types.CreateAssistantR
 		return err
 	}
 
-	assistant.AssistantAppId = remoteAssistant.ID
+	assistant.RemoteId = remoteAssistant.ID
 	err = l.assistantRepo.Create(ctx, assistant)
 	return err
+}
+
+func (l *assistantLogic) Delete(ctx context.Context, id int64) error {
+
+	assistant, err := l.assistantRepo.First(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	if assistant.Id == 0 {
+		return nil
+	}
+
+	err = l.assistantRepo.Delete(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	_, err = l.aiClient.DeleteAssistant(ctx, assistant.RemoteId)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (l *assistantLogic) Save(ctx context.Context, req *types.UpdateAssistantReq) error {
@@ -82,12 +109,12 @@ func (l *assistantLogic) Save(ctx context.Context, req *types.UpdateAssistantReq
 	}
 
 	assistantRequest.Tools = req.Tools
-	remoteAssistant, err := l.aiClient.ModifyAssistant(ctx, assistant.AssistantAppId, assistantRequest)
+	remoteAssistant, err := l.aiClient.ModifyAssistant(ctx, assistant.RemoteId, assistantRequest)
 	if err != nil {
 		return err
 	}
 
-	assistant.AssistantAppId = remoteAssistant.ID
+	assistant.RemoteId = remoteAssistant.ID
 	err = l.assistantRepo.Save(ctx, assistant)
 	return err
 }
@@ -99,12 +126,12 @@ func (l *assistantLogic) First(ctx context.Context, id int64) (*types.GetAssista
 	}
 
 	resp := &types.GetAssistantResp{
-		AssistantAppId: assistant.AssistantAppId,
-		Id:             assistant.Id,
-		Instructions:   assistant.Instructions,
-		Model:          assistant.Model,
-		Name:           assistant.Name,
-		Remark:         assistant.Remark,
+		RemoteId:     assistant.RemoteId,
+		Id:           assistant.Id,
+		Instructions: assistant.Instructions,
+		Model:        assistant.Model,
+		Name:         assistant.Name,
+		Remark:       assistant.Remark,
 	}
 	_ = json.Unmarshal(assistant.ToolResources, &resp.ToolResources)
 	_ = json.Unmarshal(assistant.Tools, &resp.Tools)
@@ -136,4 +163,48 @@ func (l *assistantLogic) List(ctx context.Context, req *types.ListAssistantReq) 
 		Size:      req.Size,
 		TotalPage: utils.GetTotalPage(total, req.Size),
 	}, nil
+}
+
+func (l *assistantLogic) SendMessage(ctx context.Context, req *types.Message) (*types.GetAssistantResp, error) {
+	assistant, err := l.assistantRepo.First(ctx, req.AssistantId)
+	if err != nil {
+		return nil, err
+	}
+
+	thread, err := l.threadRepo.First(ctx, req.ThreadId)
+	if err != nil {
+		return nil, nil
+	}
+	if thread.Id == 0 {
+		threadResp, err := l.aiClient.CreateThread(
+			ctx,
+			openai.ThreadRequest{
+				Messages: []openai.ThreadMessage{
+					{
+						Role:    openai.ThreadMessageRoleAssistant,
+						Content: req.Message,
+					},
+				},
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		tmpThread := &model.AssistantThread{
+			Name:        req.Message,
+			AssistantId: req.AssistantId,
+			RemoteId:    threadResp.ID,
+		}
+
+		err = l.threadRepo.Create(ctx, tmpThread)
+		if err != nil {
+			return nil, err
+		}
+		thread = tmpThread
+	}
+
+	l.aiClient.CreateThreadAndRun()
+
+	return resp, nil
 }

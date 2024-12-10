@@ -2,7 +2,7 @@ CREATE TABLE `assistant` (
     id bigint NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name varchar(255) NOT NULL COMMENT '名称',
     instructions text NOT NULL COMMENT '指令',
-    assistant_app_id varchar(255) DEFAULT '' NOT NULL COMMENT '远程assistant_id',
+    remote_id varchar(255) DEFAULT '' NOT NULL COMMENT '远程id',
     model varchar(255) DEFAULT '' NOT NULL COMMENT '模型',
     tools longtext NOT NULL COMMENT '工具',
     tool_resources longtext NOT NULL COMMENT '用具资源',
