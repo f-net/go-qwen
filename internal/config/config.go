@@ -4,11 +4,9 @@ import (
 	"fmt"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
-	"gorm.io/gorm"
 	"qwen/internal/types"
 )
 
-var db *gorm.DB
 var config = types.Config{}
 var configFileName = "config.yaml"
 
@@ -31,4 +29,8 @@ func InitConfig() {
 	if err = v.Unmarshal(&config); err != nil {
 		fmt.Println(err)
 	}
+}
+
+func GetConfig() *types.Config {
+	return &config
 }

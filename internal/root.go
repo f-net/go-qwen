@@ -6,6 +6,6 @@ import (
 )
 
 func InitRooter(rooter *gin.Engine) {
-	rooter.Group("/assistant")
-	rooter.POST("", handle.CreateAssistant)
+	assistantRoter := rooter.Group("/assistant")
+	assistantRoter.POST("", handle.CreateAssistant)
 }

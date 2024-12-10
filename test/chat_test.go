@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/sashabaranov/go-openai"
-	"qwen/utils"
+	"qwen/test/utils"
 	"testing"
 )
 

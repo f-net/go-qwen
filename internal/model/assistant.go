@@ -6,7 +6,6 @@ type Assistant struct {
 	Id             int64           `json:"id"`
 	Name           string          `json:"name"`
 	Instructions   string          `json:"instructions"`
-	Description    string          `json:"description"` // 描述信息
 	AssistantAppId string          `json:"assistantAppId"`
 	Model          string          `json:"model"`
 	Tools          json.RawMessage `json:"tools"`

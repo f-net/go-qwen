@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/sashabaranov/go-openai"
-	"qwen/utils"
+	"qwen/test/utils"
 	"testing"
 )
 

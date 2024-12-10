@@ -14,5 +14,5 @@ func main() {
 	r := gin.Default()
 	internal.InitRooter(r)
 
-	r.Run(":8000")
+	r.Run(":3003")
 }

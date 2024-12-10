@@ -6,7 +6,7 @@ import (
 	"github.com/sashabaranov/go-openai"
 	"io"
 	"log"
-	"qwen/utils"
+	"qwen/test/utils"
 	"testing"
 )
 

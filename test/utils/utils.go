@@ -1,9 +1,8 @@
 package utils
 
 import (
-	"github.com/joho/godotenv"
 	"github.com/sashabaranov/go-openai"
-	"os"
+	"qwen/internal/config"
 	"qwen/test"
 )
 
@@ -19,8 +18,8 @@ func GetAssistantClient() *openai.Client {
 }
 
 func GetApiKey() string {
-	godotenv.Load()
-	return test.ApiKey + os.Getenv("apikey")
+	config.InitConfig()
+	return test.ApiKey + config.GetConfig().BaiLian.Apikey
 }
 
 func NewPointer[T any](value T) *T {

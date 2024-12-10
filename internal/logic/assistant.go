@@ -32,7 +32,6 @@ func (l *assistantLogic) Create(ctx context.Context, req *types.Assistant) error
 	assistant := &model.Assistant{
 		Name:          req.Name,
 		Instructions:  req.Instructions,
-		Description:   req.Description,
 		Model:         req.Model,
 		Tools:         utils.Swap2Json(req.Tools),
 		ToolResources: utils.Swap2Json(req.ToolResources),
@@ -43,7 +42,7 @@ func (l *assistantLogic) Create(ctx context.Context, req *types.Assistant) error
 		Model:        req.Model,
 		Name:         &req.Name,
 		Instructions: &req.Instructions,
-		Description:  &req.Description,
+		Description:  &req.Remark,
 	}
 
 	assistantRequest.Tools = req.Tools

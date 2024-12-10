@@ -1,7 +1,7 @@
 # go-qwen
 
 由于阿里百炼平台通义千问大模型没有完善的go语言示例，并且官方答复assistant是不兼容openapi sdk的。
-实际使用中发现是能够支持的，所以自己写了一个demo test示例，给大家做一个参考。
+实际使用中发现是能够支持的，所以自己写了一个demo示例，给大家做一个参考。
 
 # apikey 生成官方教程
 https://help.aliyun.com/zh/model-studio/getting-started/first-api-call-to-qwen
@@ -24,3 +24,4 @@ https://help.aliyun.com/zh/model-studio/getting-started/first-api-call-to-qwen
     3. 创建消息(在会话上创建)
     4. 创建执行任务（执行会话）
     5. 获取最后一次执行结果
+- -----------------------------------------------------------------------------------------------------------------
