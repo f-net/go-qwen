@@ -2,12 +2,14 @@ package utils
 
 import "encoding/json"
 
-func Swap2Json(data interface{}) json.RawMessage {
+func Swap2Json(data interface{}) string {
 	if data == nil {
-		return []byte("")
+		data = make([]int, 0)
+		marshal, _ := json.Marshal(data)
+		return string(marshal)
 	}
 	marshal, _ := json.Marshal(data)
-	return marshal
+	return string(marshal)
 }
 
 func NewPointer[T any](value T) *T {

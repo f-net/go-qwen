@@ -1,0 +1,39 @@
+{{define "assistant/chat/list.html"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<script>
+    // 解析传递的 JSON 数据
+    // const data = JSON.parse('{{.data}}');
+    //
+    // // 动态生成表格
+    // let tableHtml = '<table><thead><tr><th>名称</th><th>指令</th><th>模型</th><th>备注</th><th>操作</th></tr></thead><tbody>';
+    //
+    // // 遍历 JSON 数据并生成表格行
+    // data.list.forEach(item => {
+    //     tableHtml += `<tr>
+    //             <td>${item.name}</td>
+    //             <td>${item.instructions}</td>
+    //             <td>${item.model}</td>
+    //             <td>${item.remark}</td>
+    //             <td>
+    //                 <button class="button view-button" onclick="showViewModal(${item.id})">查看</button>
+    //                 <button class="button edit-button" onclick="showEditModal(${item.id})">修改</button>
+    //                 <button class="button delete-button" onclick="handleAction('DELETE', ${item.id})">删除</button>
+    //                 <button class="button chat-button" onclick="startChat()">对话</button>
+    //             </td>
+    //         </tr>`;
+    // });
+    //
+    // tableHtml += '</tbody></table>';
+    // document.body.innerHTML += tableHtml;
+</script>
+
+</body>
+</html>
+{{end}}

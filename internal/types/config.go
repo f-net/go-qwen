@@ -11,6 +11,7 @@ type Mysql struct {
 	User     string `json:"user" yaml:"user"`
 	Password string `json:"password" yaml:"password"`
 	DB       string `json:"db" yaml:"db"`
+	Dir      string `json:"dir" yaml:"dir"`
 }
 
 type BaiLian struct {

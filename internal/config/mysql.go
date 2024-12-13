@@ -3,8 +3,11 @@ package config
 import (
 	"fmt"
 	"gorm.io/driver/mysql"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
+	"os"
+	"path/filepath"
 )
 
 var db *gorm.DB
@@ -24,6 +27,41 @@ func InitMysql() {
 	if err != nil {
 		panic(err)
 	}
+}
+func InitSqlite() {
+	var err error
+	path, _ := filepath.Abs(os.Args[0])
+	// 提取目录部分
+	execDir := filepath.Dir(path) + "\\" + config.Mysql.Dir
+	// 如果子目录不存在，则创建它
+	err = os.MkdirAll(execDir, os.ModePerm)
+	if err != nil {
+		panic(err)
+	}
+	db, err = gorm.Open(sqlite.Open(execDir+"\\"+config.Mysql.DB+".db"), &gorm.Config{
+		NamingStrategy: schema.NamingStrategy{SingularTable: true},
+	})
+	if err != nil {
+		panic(err)
+	}
+	sqlPath := execDir + "\\docs"
+	files, err := os.ReadDir(sqlPath)
+	if err != nil {
+		panic(err)
+	}
+	for _, file := range files {
+		// 获取文件后缀
+		if ext := filepath.Ext(file.Name()); ext == ".sql" {
+			// 获取文件内容
+			readFile, err := os.ReadFile(sqlPath + "\\" + file.Name())
+			if err != nil {
+				panic(err)
+			}
+			err = db.Debug().Exec(string(readFile)).Error
+			fmt.Println(err)
+		}
+	}
+
 }
 
 func GetDB() *gorm.DB {

@@ -1,0 +1,309 @@
+{{define "assistant/list.html"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.title}}</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        .button {
+            padding: 5px 10px;
+            margin: 2px;
+            cursor: pointer;
+        }
+        .add-button { background-color: #71c426; color: white; }
+        .view-button { background-color: #5bc0de; color: white; }
+        .edit-button { background-color: #f0ad4e; color: white; }
+        .delete-button { background-color: #d9534f; color: white; }
+        .chat-button { background-color: #e610ef; color: white; }
+
+        .top-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin: 20px 0;
+        }
+        /* 模态框样式 */
+        .modal {
+            display: none; /* 默认隐藏 */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .form-input {
+            margin: 10px 0;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        .modal-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .modal-buttons button {
+            padding: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h1>{{.title}}</h1>
+
+<!-- 新增按钮 -->
+<div class="top-buttons">
+    <button class="button add-button" onclick="showAddModal()">新增</button>
+</div>
+
+<script>
+
+
+    // 解析传递的 JSON 数据
+    const data = JSON.parse('{{.data}}');
+
+    // 动态生成表格
+    let tableHtml = '<table><thead><tr><th>名称</th><th>指令</th><th>模型</th><th>备注</th><th>操作</th></tr></thead><tbody>';
+
+    // 遍历 JSON 数据并生成表格行
+    data.list.forEach(item => {
+        tableHtml += `<tr>
+                <td>${item.name}</td>
+                <td>${item.instructions}</td>
+                <td>${item.model}</td>
+                <td>${item.remark}</td>
+                <td>
+                    <button class="button view-button" onclick="showViewModal(${item.id})">查看</button>
+                    <button class="button edit-button" onclick="showEditModal(${item.id})">修改</button>
+                    <button class="button delete-button" onclick="handleAction('DELETE', ${item.id})">删除</button>
+                    <button class="button chat-button" onclick="startChat()">对话</button>
+                </td>
+            </tr>`;
+    });
+
+    tableHtml += '</tbody></table>';
+    document.body.innerHTML += tableHtml;
+
+    // 跳转到对话页面
+    function startChat() {
+        window.location.href = "/assistant/chat/list";
+    }
+
+
+    // 操作按钮事件处理（删除）
+    function handleAction(method, id) {
+        let url = `/assistant?id=${id}`;
+        let requestConfig = {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
+
+        // 发起请求
+        fetch(url, requestConfig)
+            .then(response => response.text())
+            .then(data => {
+                alert(data); // 展示返回结果
+                location.reload(); // 刷新页面
+            })
+            .catch(error => {
+                console.error('请求出错:', error);
+            });
+    }
+
+    // 查看模态框
+    function showViewModal(id) {
+        const item = data.list.find(i => i.id === id);
+        if (item) {
+            document.getElementById("viewName").innerText = item.name;
+            document.getElementById("viewInstructions").innerText = item.instructions;
+            document.getElementById("viewModel").innerText = item.model;
+            document.getElementById("viewRemark").innerText = item.remark;
+
+            // 显示模态框
+            document.getElementById("viewModal").style.display = "block";
+        }
+    }
+
+    // 修改模态框
+    function showEditModal(id) {
+        const item = data.list.find(i => i.id === id);
+        if (item) {
+            document.getElementById("editName").value = item.name;
+            document.getElementById("editInstructions").value = item.instructions;
+            document.getElementById("editModel").value = item.model;
+            document.getElementById("editRemark").value = item.remark;
+            document.getElementById("editId").value = item.id;
+
+            // 显示模态框
+            document.getElementById("editModal").style.display = "block";
+        }
+    }
+    // 新增模态框
+    function showAddModal() {
+        document.getElementById("addModal").style.display = "block";
+    }
+    // 关闭模态框
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = "none";
+    }
+
+    // 提交修改操作
+    function submitEdit() {
+        const id = document.getElementById("editId").value;
+        const updatedItem = {
+            id: Number(id),
+            name: document.getElementById("editName").value,
+            instructions: document.getElementById("editInstructions").value,
+            model: document.getElementById("editModel").value,
+            remark: document.getElementById("editRemark").value
+        };
+
+        fetch(`/assistant/update`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updatedItem)
+        })
+            .then(response => response.text())
+            .then(data => {
+                alert(data); // 展示返回结果
+                closeModal('editModal'); // 关闭模态框
+                location.reload(); // 刷新页面
+            })
+            .catch(error => console.error('请求失败:', error));
+    }
+
+    // 提交新增操作
+    function submitAdd() {
+        const newItem = {
+            name: document.getElementById("addName").value,
+            instructions: document.getElementById("addInstructions").value,
+            model: document.getElementById("addModel").value,
+            remark: document.getElementById("addRemark").value
+        };
+
+        fetch('/assistant', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newItem)
+        })
+            .then(response => response.text())
+            .then(data => {
+                alert(data); // 展示返回结果
+                closeModal('addModal'); // 关闭模态框
+                location.reload(); // 刷新页面
+            })
+            .catch(error => console.error('请求失败:', error));
+    }
+</script>
+
+<!-- 查看模态框 -->
+<div id="viewModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('viewModal')">&times;</span>
+        <h2>查看详情</h2>
+        <p><strong>名称:</strong> <span id="viewName"></span></p>
+        <p><strong>指令:</strong> <span id="viewInstructions"></span></p>
+        <p><strong>模型:</strong> <span id="viewModel"></span></p>
+        <p><strong>备注:</strong> <span id="viewRemark"></span></p>
+        <button onclick="closeModal('viewModal')">关闭</button>
+    </div>
+</div>
+
+<!-- 修改模态框 -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('editModal')">&times;</span>
+        <h2>修改详情</h2>
+        <form>
+            <input type="hidden" id="editId">
+            <label for="editName">名称:</label>
+            <input type="text" id="editName" class="form-input"><br>
+            <label for="editInstructions">指令:</label>
+            <input type="text" id="editInstructions" class="form-input"><br>
+            <label for="editModel">模型:</label>
+            <input type="text" id="editModel" class="form-input"><br>
+            <label for="editRemark">备注:</label>
+            <input type="text" id="editRemark" class="form-input"><br>
+
+            <div class="modal-buttons">
+                <button type="button" onclick="submitEdit()">提交</button>
+                <button type="button" onclick="closeModal('editModal')">取消</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 新增模态框 -->
+<div id="addModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('addModal')">&times;</span>
+        <h2>新增条目</h2>
+        <form>
+            <label for="addName">名称:</label>
+            <input type="text" id="addName" class="form-input"><br>
+            <label for="addInstructions">指令:</label>
+            <input type="text" id="addInstructions" class="form-input"><br>
+            <label for="addModel">模型:</label>
+            <input type="text" id="addModel" class="form-input"><br>
+            <label for="addRemark">备注:</label>
+            <input type="text" id="addRemark" class="form-input"><br>
+
+            <div class="modal-buttons">
+                <button type="button" onclick="submitAdd()">提交</button>
+                <button type="button" onclick="closeModal('addModal')">取消</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
+{{end}}
+

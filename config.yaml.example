@@ -3,7 +3,8 @@ mysql:
     port: 3306
     user: "root"
     password: "123456"
-    db: "bailian_test"
+    db: "qwen"
+    dir: "database"
 
 bailian:
     apikey: "sk-xxxxx"

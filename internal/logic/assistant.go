@@ -106,8 +106,8 @@ func (l *assistantLogic) First(ctx context.Context, id int64) (*types.GetAssista
 		Name:           assistant.Name,
 		Remark:         assistant.Remark,
 	}
-	_ = json.Unmarshal(assistant.ToolResources, &resp.ToolResources)
-	_ = json.Unmarshal(assistant.Tools, &resp.Tools)
+	_ = json.Unmarshal([]byte(assistant.ToolResources), &resp.ToolResources)
+	_ = json.Unmarshal([]byte(assistant.Tools), &resp.Tools)
 
 	return resp, nil
 }

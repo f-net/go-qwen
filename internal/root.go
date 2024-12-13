@@ -6,9 +6,13 @@ import (
 )
 
 func InitRooter(rooter *gin.Engine) {
+
 	assistantRoter := rooter.Group("/assistant")
 	assistantRoter.POST("", handle.CreateAssistant)
-	assistantRoter.PUT("", handle.UpdateAssistant)
+	assistantRoter.POST("update", handle.UpdateAssistant)
 	assistantRoter.GET("", handle.GetAssistant)
 	assistantRoter.GET("list", handle.GetAssistantList)
+
+	//chatRoter := assistantRoter.Group("/chat")
+	//chatRoter.GET("list", handle.ChatList)
 }

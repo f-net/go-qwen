@@ -2,6 +2,7 @@ package handle
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"qwen/internal/config"
 	"qwen/internal/logic"
@@ -68,5 +69,10 @@ func GetAssistantList(c *gin.Context) {
 		ErrorResp(c, err)
 		return
 	}
-	SuccessResp(c, resp)
+	//SuccessResp(c, resp)
+	data, _ := json.Marshal(resp)
+	c.HTML(200, "assistant/list.html", map[string]interface{}{
+		"title": "助手列表",
+		"data":  string(data),
+	})
 }

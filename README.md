@@ -8,6 +8,14 @@ https://help.aliyun.com/zh/model-studio/getting-started/first-api-call-to-qwen
 # apifox 共享链接
 https://apifox.com/apidoc/shared-78492d5a-83f6-479c-99cb-e7d18a80fcf6
 
+##
+```
+go env -w CGO_ENABLED=1
+gcc 下载地址:
+    https://zenlayer.dl.sourceforge.net/project/mingw-w64/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/8.1.0/threads-posix/seh/x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z?viasf=1
+
+解压后配置PATH
+```
 
 ## internal 结构
 ```
