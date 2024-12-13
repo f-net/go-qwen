@@ -18,14 +18,14 @@ type UpdateAssistantReq struct {
 }
 
 type GetAssistantResp struct {
-	Id             int64                  `json:"id"`
-	Name           string                 `json:"name"`
-	Instructions   string                 `json:"instructions"`
-	AssistantAppId string                 `json:"assistantAppId"`
-	Model          string                 `json:"model"`
-	Tools          []openai.AssistantTool `json:"tools"`
-	ToolResources  openai.ToolResources   `json:"toolResources"` // 工具资源
-	Remark         string                 `json:"remark"`        // 备注
+	Id            int64                  `json:"id"`
+	Name          string                 `json:"name"`
+	Instructions  string                 `json:"instructions"`
+	RemoteId      string                 `json:"assistantAppId"`
+	Model         string                 `json:"model"`
+	Tools         []openai.AssistantTool `json:"tools"`
+	ToolResources openai.ToolResources   `json:"toolResources"` // 工具资源
+	Remark        string                 `json:"remark"`        // 备注
 }
 
 type ListAssistantReq struct {
@@ -41,4 +41,8 @@ type ListAssistantResp struct {
 	Remark       string `json:"remark"` // 备注
 	CreatedAt    int64  `json:"createdAt" default:"now"`
 	UpdatedAt    int64  `json:"updatedAt" default:"now"`
+}
+
+type GetMessageResp struct {
+	Message string `json:"message"`
 }

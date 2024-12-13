@@ -14,6 +14,7 @@ type (
 	}
 	IAssistantRepo interface {
 		Create(ctx context.Context, assistant *model.Assistant) error
+		Delete(ctx context.Context, id int64) error
 		Save(ctx context.Context, assistant *model.Assistant) error
 		First(ctx context.Context, id int64) (*model.Assistant, error)
 		Search(ctx context.Context, req *types.ListAssistantReq) (*[]model.Assistant, int64, error)
@@ -29,12 +30,16 @@ func NewAssistantRepo(db *gorm.DB) IAssistantRepo {
 func (repo *assistantRepo) Create(ctx context.Context, assistant *model.Assistant) error {
 	return repo.db.Create(assistant).Error
 }
+func (repo *assistantRepo) Delete(ctx context.Context, id int64) error {
+	err := repo.db.Where("id", id).Delete(&model.Assistant{}).Error
+	return err
+}
 func (repo *assistantRepo) Save(ctx context.Context, assistant *model.Assistant) error {
 	return repo.db.Save(assistant).Error
 }
 func (repo *assistantRepo) First(ctx context.Context, id int64) (*model.Assistant, error) {
 	var assistant model.Assistant
-	err := repo.db.First(&assistant).Error
+	err := repo.db.Where("id", id).First(&assistant).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, nil
 	}
