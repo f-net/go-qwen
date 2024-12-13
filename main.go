@@ -21,7 +21,7 @@ func main() {
 
 	dir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
 	fmt.Println(dir)
-	r.LoadHTMLGlob("internal\\templates\\**\\*")
+	r.LoadHTMLGlob("view/templates/**/*.html")
 
 	internal.InitRooter(r)
 
