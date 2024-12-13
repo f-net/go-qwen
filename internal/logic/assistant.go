@@ -166,45 +166,45 @@ func (l *assistantLogic) List(ctx context.Context, req *types.ListAssistantReq) 
 }
 
 func (l *assistantLogic) SendMessage(ctx context.Context, req *types.Message) (*types.GetAssistantResp, error) {
-	assistant, err := l.assistantRepo.First(ctx, req.AssistantId)
-	if err != nil {
-		return nil, err
-	}
+	//assistant, err := l.assistantRepo.First(ctx, req.AssistantId)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//thread, err := l.threadRepo.First(ctx, req.ThreadId)
+	//if err != nil {
+	//	return nil, nil
+	//}
+	//if thread.Id == 0 {
+	//	threadResp, err := l.aiClient.CreateThread(
+	//		ctx,
+	//		openai.ThreadRequest{
+	//			Messages: []openai.ThreadMessage{
+	//				{
+	//					Role:    openai.ThreadMessageRoleAssistant,
+	//					Content: req.Message,
+	//				},
+	//			},
+	//		},
+	//	)
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//
+	//	tmpThread := &model.AssistantThread{
+	//		Name:        req.Message,
+	//		AssistantId: req.AssistantId,
+	//		RemoteId:    threadResp.ID,
+	//	}
+	//
+	//	err = l.threadRepo.Create(ctx, tmpThread)
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//	thread = tmpThread
+	//}
+	//
+	//l.aiClient.CreateThreadAndRun()
 
-	thread, err := l.threadRepo.First(ctx, req.ThreadId)
-	if err != nil {
-		return nil, nil
-	}
-	if thread.Id == 0 {
-		threadResp, err := l.aiClient.CreateThread(
-			ctx,
-			openai.ThreadRequest{
-				Messages: []openai.ThreadMessage{
-					{
-						Role:    openai.ThreadMessageRoleAssistant,
-						Content: req.Message,
-					},
-				},
-			},
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		tmpThread := &model.AssistantThread{
-			Name:        req.Message,
-			AssistantId: req.AssistantId,
-			RemoteId:    threadResp.ID,
-		}
-
-		err = l.threadRepo.Create(ctx, tmpThread)
-		if err != nil {
-			return nil, err
-		}
-		thread = tmpThread
-	}
-
-	l.aiClient.CreateThreadAndRun()
-
-	return resp, nil
+	return nil, nil
 }

@@ -2,8 +2,6 @@ package handle
 
 import (
 	"github.com/gin-gonic/gin"
-	"qwen/internal/config"
-	"qwen/internal/logic"
 	"qwen/internal/types"
 )
 
@@ -13,5 +11,5 @@ func SendMessageOnAssistant(c *gin.Context) {
 	if err != nil {
 		ErrorResp(c, err)
 	}
-	logic.NewAssistantLogic(config.GetDB()).Create()
+	//logic.NewAssistantLogic(config.GetDB()).Create()
 }
