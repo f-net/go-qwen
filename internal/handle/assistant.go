@@ -16,7 +16,16 @@ func CreateAssistant(c *gin.Context) {
 		ErrorResp(c, err)
 		return
 	}
-	err = logic.NewAssistantLogic(config.GetDB()).Create(context.Background(), req)
+	db := config.GetDB()
+	tx := db.Begin()
+	defer func() {
+		if err == nil {
+			tx.Commit()
+			return
+		}
+		tx.Rollback()
+	}()
+	err = logic.NewAssistantLogic(tx).Create(context.Background(), req)
 	if err != nil {
 		ErrorResp(c, err)
 		return
@@ -32,7 +41,16 @@ func DeleteAssistant(c *gin.Context) {
 		ErrorResp(c, err)
 		return
 	}
-	err = logic.NewAssistantLogic(config.GetDB()).Delete(context.Background(), req.Id)
+	db := config.GetDB()
+	tx := db.Begin()
+	defer func() {
+		if err == nil {
+			tx.Commit()
+			return
+		}
+		tx.Rollback()
+	}()
+	err = logic.NewAssistantLogic(tx).Delete(context.Background(), req.Id)
 	if err != nil {
 		ErrorResp(c, err)
 		return
@@ -48,7 +66,16 @@ func UpdateAssistant(c *gin.Context) {
 		ErrorResp(c, err)
 		return
 	}
-	err = logic.NewAssistantLogic(config.GetDB()).Save(context.Background(), req)
+	db := config.GetDB()
+	tx := db.Begin()
+	defer func() {
+		if err == nil {
+			tx.Commit()
+			return
+		}
+		tx.Rollback()
+	}()
+	err = logic.NewAssistantLogic(tx).Save(context.Background(), req)
 	if err != nil {
 		ErrorResp(c, err)
 		return

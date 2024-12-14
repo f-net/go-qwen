@@ -10,20 +10,26 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            display: flex;
             height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        /* 左侧会话列表 */
+
+        /* 顶部会话列表 */
         .sidebar {
-            width: 250px;
+            height: 15%; /* 占据屏幕上方的30% */
             background-color: #f1f1f1;
-            border-right: 1px solid #ddd;
-            padding: 20px;
+            border-bottom: 1px solid #ddd;
+            padding: 10px;
             overflow-y: auto;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .sidebar h2 {
             text-align: center;
+            margin: 0 0 10px;
         }
+
         .conversation-item {
             padding: 10px;
             margin: 5px 0;
@@ -32,48 +38,62 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
         .conversation-item:hover {
             background-color: #e0e0e0;
         }
 
-        /* 右侧聊天内容 */
+        /* 底部聊天窗口 */
         .chat-window {
-            flex: 1;
+            flex: 1; /* 占据剩余高度 */
             display: flex;
             flex-direction: column;
             background-color: #fff;
-            padding: 20px;
+            padding: 10px;
+            overflow: hidden;
         }
+
         .message-container {
             flex: 1;
             overflow-y: auto;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
         }
+
         .message {
-            margin: 10px 0;
+            margin: 5px 0;
             padding: 10px;
             border-radius: 10px;
         }
+
         .user-message {
             background-color: #d1ecf1;
             align-self: flex-end;
             text-align: right;
         }
+
         .bot-message {
             background-color: #f8d7da;
             align-self: flex-start;
             text-align: left;
         }
+
         .input-container {
             display: flex;
             justify-content: space-between;
+            gap: 10px;
         }
+
         .input-container input {
-            width: 80%;
+            flex: 1;
             padding: 10px;
             border-radius: 5px;
             border: 1px solid #ddd;
         }
+
         .input-container button {
             padding: 10px 20px;
             border-radius: 5px;
@@ -82,8 +102,31 @@
             color: white;
             cursor: pointer;
         }
+
         .input-container button:hover {
             background-color: #218838;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .sidebar {
+                font-size: 14px;
+                padding: 5px;
+            }
+
+            .conversation-item {
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            .chat-window {
+                padding: 5px;
+            }
+
+            .input-container button {
+                font-size: 14px;
+                padding: 8px 15px;
+            }
         }
     </style>
 </head>
@@ -105,7 +148,6 @@
 </div>
 
 <script>
-
     // 解析传递的 JSON 数据
     const conversations = JSON.parse('{{.data}}');
 
@@ -120,7 +162,6 @@
     // 生成会话列表
     function generateConversationList() {
         const conversationList = document.getElementById('conversation-list');
-        console.log(conversations)
         conversations.list.forEach(conversation => {
             const item = document.createElement('div');
             item.classList.add('conversation-item');
@@ -136,6 +177,7 @@
         currentPage = 1; // 重置页面为第一页
         loadMessages(conversationId, currentPage, pageSize);
     }
+
     // 加载会话的消息
     function loadMessages(conversationId, page, pageSize) {
         const chatMessages = document.getElementById('chat-messages');
@@ -145,97 +187,71 @@
         fetch(`/assistant/thread/message/list?threadId=${conversationId}&page=${page}&size=${pageSize}`)
             .then(response => response.json())
             .then(data => {
-                if (data&&data.data&&data.data.list) {
+                if (data && data.data && data.data.list) {
                     data.data.list.forEach(msg => {
-                        // 创建消息容器
-                        const messageContainer = document.createElement('div');
-
                         // 显示提问（question）
                         const questionElement = document.createElement('div');
                         questionElement.classList.add('message', 'user-message');
-                        questionElement.textContent = msg.question; // 提问
-                        messageContainer.appendChild(questionElement);
+                        questionElement.textContent = msg.question;
+                        chatMessages.appendChild(questionElement);
 
-                        // 显示智能体回答（answer）
+                        // 显示回答（answer）
                         const answerElement = document.createElement('div');
                         answerElement.classList.add('message', 'bot-message');
-                        // 如果 msg.answer 中包含换行符，则替换为 <br>
-                        answerElement.innerHTML = msg.answer.replace(/\n/g, '<br>'); // 使用 <br> 标签替换换行符
-                        messageContainer.appendChild(answerElement);
-
-                        // 将消息容器添加到聊天消息列表
-                        chatMessages.appendChild(messageContainer);
+                        answerElement.innerHTML = msg.answer.replace(/\n/g, '<br>');
+                        chatMessages.appendChild(answerElement);
                     });
+
+                    // 滚动到底部
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
                 }
             })
             .catch(error => {
                 console.error('加载消息失败:', error);
             });
     }
+
     // 发送消息
     function sendMessage() {
-        console.log("click send")
         const userInput = document.getElementById('user-input').value;
         if (userInput) {
-            // 创建用户消息元素并追加到聊天窗口
-            const messageContainer = document.createElement('div');
-
+            // 用户消息
+            const chatMessages = document.getElementById('chat-messages');
             const questionElement = document.createElement('div');
             questionElement.classList.add('message', 'user-message');
-            questionElement.textContent = userInput; // 用户输入的提问
-            messageContainer.appendChild(questionElement);
-
-            // 将用户消息添加到聊天框
-            const chatMessages = document.getElementById('chat-messages');
-            chatMessages.appendChild(messageContainer);
-
-            // 清空输入框
+            questionElement.textContent = userInput;
+            chatMessages.appendChild(questionElement);
             document.getElementById('user-input').value = '';
 
-            // 调用发送消息的接口，传递会话ID和用户消息
-            sendMessageParam  = JSON.stringify({
-                question: userInput, // 用户输入的提问
-                assistantId: Number(assistantId),
-                threadId: (currentConversation),
-                // 可以根据后端接口需要传其他参数
-            })
-            console.log(sendMessageParam)
+            // 调用 API
             fetch(`/assistant/thread/message/send`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
-                body: sendMessageParam
+                body: JSON.stringify({
+                    question: userInput,
+                    assistantId: Number(assistantId),
+                    threadId: currentConversation,
+                }),
             })
                 .then(response => response.json())
                 .then(data => {
-                    console.log('发送消息成功:', data);
-                    if (data && data.data ) {
-                        if (data.data.threadId !== "0"){
-                            currentConversation = data.data.threadId;
-                        }
-                        // 创建机器人回答元素并追加到聊天窗口
-                        const answerContainer = document.createElement('div');
+                    if (data && data.data) {
                         const answerElement = document.createElement('div');
                         answerElement.classList.add('message', 'bot-message');
-                        console.log("dsafdfsa")
-                        answerElement.innerHTML = data.data.answer.replace(/\n/g, '<br>'); // 使用 <br> 标签替换换行符
-                        answerContainer.appendChild(answerElement);
+                        answerElement.innerHTML = data.data.answer.replace(/\n/g, '<br>');
+                        chatMessages.appendChild(answerElement);
 
-                        // 将机器人回答添加到聊天框
-                        chatMessages.appendChild(answerContainer);
-
-                        // 滚动到最底部
+                        // 滚动到底部
                         chatMessages.scrollTop = chatMessages.scrollHeight;
                     }
                 })
-                .catch(error => {
-                    console.error('发送消息失败:', error);
-                });
+                .catch(error => console.error('发送消息失败:', error));
         }
     }
 
-    // 初始化
+    // 初始化会话列表
     generateConversationList();
 </script>
 </body>

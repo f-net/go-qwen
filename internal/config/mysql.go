@@ -2,8 +2,8 @@ package config
 
 import (
 	"fmt"
+	"github.com/glebarez/sqlite"
 	"gorm.io/driver/mysql"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
 	"os"
@@ -32,19 +32,35 @@ func InitSqlite() {
 	var err error
 	path, _ := filepath.Abs(os.Args[0])
 	// 提取目录部分
-	execDir := filepath.Dir(path) + "\\" + config.Mysql.Dir
+	execDir := filepath.Dir(path) + "/" + config.Mysql.Dir
 	// 如果子目录不存在，则创建它
 	err = os.MkdirAll(execDir, os.ModePerm)
 	if err != nil {
 		panic(err)
 	}
-	db, err = gorm.Open(sqlite.Open(execDir+"\\"+config.Mysql.DB+".db"), &gorm.Config{
-		NamingStrategy: schema.NamingStrategy{SingularTable: true},
-	})
+	//dsn := "file:" + execDir + "\\" + config.Mysql.DB + ".db" + "?cache=shared&_foreign_keys=on"
+	dsn := execDir + "/" + config.Mysql.DB + ".db"
+
+	gormConfig := &gorm.Config{
+		NamingStrategy: schema.NamingStrategy{
+			SingularTable: true,
+		},
+	}
+
+	db, err = gorm.Open(sqlite.Open(dsn), gormConfig)
 	if err != nil {
 		panic(err)
 	}
-	sqlPath := execDir + "\\docs"
+
+	//db, err := gorm.Open(sqlite.(dsn), &gorm.Config{
+	//	NamingStrategy: schema.NamingStrategy{
+	//		SingularTable: true,
+	//	},
+	//})
+	if err != nil {
+		panic(err)
+	}
+	sqlPath := execDir + "/docs"
 	files, err := os.ReadDir(sqlPath)
 	if err != nil {
 		panic(err)
@@ -53,7 +69,7 @@ func InitSqlite() {
 		// 获取文件后缀
 		if ext := filepath.Ext(file.Name()); ext == ".sql" {
 			// 获取文件内容
-			readFile, err := os.ReadFile(sqlPath + "\\" + file.Name())
+			readFile, err := os.ReadFile(sqlPath + "/" + file.Name())
 			if err != nil {
 				panic(err)
 			}
