@@ -3,10 +3,241 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.title}}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+        }
+        /* 左侧会话列表 */
+        .sidebar {
+            width: 250px;
+            background-color: #f1f1f1;
+            border-right: 1px solid #ddd;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .sidebar h2 {
+            text-align: center;
+        }
+        .conversation-item {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .conversation-item:hover {
+            background-color: #e0e0e0;
+        }
+
+        /* 右侧聊天内容 */
+        .chat-window {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+            padding: 20px;
+        }
+        .message-container {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .user-message {
+            background-color: #d1ecf1;
+            align-self: flex-end;
+            text-align: right;
+        }
+        .bot-message {
+            background-color: #f8d7da;
+            align-self: flex-start;
+            text-align: left;
+        }
+        .input-container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .input-container input {
+            width: 80%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .input-container button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+        .input-container button:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
 <body>
+<div class="sidebar">
+    <h2>会话列表</h2>
+    <div id="conversation-list">
+        <!-- 会话列表会动态生成 -->
+    </div>
+</div>
+<div class="chat-window">
+    <div id="chat-messages" class="message-container">
+        <!-- 聊天消息会动态生成 -->
+    </div>
+    <div class="input-container">
+        <input type="text" id="user-input" placeholder="请输入消息..." />
+        <button onclick="sendMessage()">发送</button>
+    </div>
+</div>
 
+<script>
+
+    // 解析传递的 JSON 数据
+    const conversations = JSON.parse('{{.data}}');
+
+    // 获取路径中的 assistantId 参数
+    const urlParams = new URLSearchParams(window.location.search);
+    const assistantId = urlParams.get('assistantId');
+
+    let currentConversation = null;
+    let currentPage = 1;
+    let pageSize = 10;
+
+    // 生成会话列表
+    function generateConversationList() {
+        const conversationList = document.getElementById('conversation-list');
+        console.log(conversations)
+        conversations.list.forEach(conversation => {
+            const item = document.createElement('div');
+            item.classList.add('conversation-item');
+            item.textContent = conversation.name;
+            item.onclick = () => loadConversation(conversation.id);
+            conversationList.appendChild(item);
+        });
+    }
+
+    // 加载选中的会话
+    function loadConversation(conversationId) {
+        currentConversation = conversationId;
+        currentPage = 1; // 重置页面为第一页
+        loadMessages(conversationId, currentPage, pageSize);
+    }
+    // 加载会话的消息
+    function loadMessages(conversationId, page, pageSize) {
+        const chatMessages = document.getElementById('chat-messages');
+        chatMessages.innerHTML = ''; // 清空聊天内容
+
+        // 发起 API 请求
+        fetch(`/assistant/thread/message/list?threadId=${conversationId}&page=${page}&size=${pageSize}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data&&data.data&&data.data.list) {
+                    data.data.list.forEach(msg => {
+                        // 创建消息容器
+                        const messageContainer = document.createElement('div');
+
+                        // 显示提问（question）
+                        const questionElement = document.createElement('div');
+                        questionElement.classList.add('message', 'user-message');
+                        questionElement.textContent = msg.question; // 提问
+                        messageContainer.appendChild(questionElement);
+
+                        // 显示智能体回答（answer）
+                        const answerElement = document.createElement('div');
+                        answerElement.classList.add('message', 'bot-message');
+                        // 如果 msg.answer 中包含换行符，则替换为 <br>
+                        answerElement.innerHTML = msg.answer.replace(/\n/g, '<br>'); // 使用 <br> 标签替换换行符
+                        messageContainer.appendChild(answerElement);
+
+                        // 将消息容器添加到聊天消息列表
+                        chatMessages.appendChild(messageContainer);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('加载消息失败:', error);
+            });
+    }
+    // 发送消息
+    function sendMessage() {
+        console.log("click send")
+        const userInput = document.getElementById('user-input').value;
+        if (userInput) {
+            // 创建用户消息元素并追加到聊天窗口
+            const messageContainer = document.createElement('div');
+
+            const questionElement = document.createElement('div');
+            questionElement.classList.add('message', 'user-message');
+            questionElement.textContent = userInput; // 用户输入的提问
+            messageContainer.appendChild(questionElement);
+
+            // 将用户消息添加到聊天框
+            const chatMessages = document.getElementById('chat-messages');
+            chatMessages.appendChild(messageContainer);
+
+            // 清空输入框
+            document.getElementById('user-input').value = '';
+
+            // 调用发送消息的接口，传递会话ID和用户消息
+            sendMessageParam  = JSON.stringify({
+                question: userInput, // 用户输入的提问
+                assistantId: Number(assistantId),
+                threadId: (currentConversation),
+                // 可以根据后端接口需要传其他参数
+            })
+            console.log(sendMessageParam)
+            fetch(`/assistant/thread/message/send`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: sendMessageParam
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('发送消息成功:', data);
+                    if (data && data.data ) {
+                        if (data.data.threadId !== "0"){
+                            currentConversation = data.data.threadId;
+                        }
+                        // 创建机器人回答元素并追加到聊天窗口
+                        const answerContainer = document.createElement('div');
+                        const answerElement = document.createElement('div');
+                        answerElement.classList.add('message', 'bot-message');
+                        console.log("dsafdfsa")
+                        answerElement.innerHTML = data.data.answer.replace(/\n/g, '<br>'); // 使用 <br> 标签替换换行符
+                        answerContainer.appendChild(answerElement);
+
+                        // 将机器人回答添加到聊天框
+                        chatMessages.appendChild(answerContainer);
+
+                        // 滚动到最底部
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }
+                })
+                .catch(error => {
+                    console.error('发送消息失败:', error);
+                });
+        }
+    }
+
+    // 初始化
+    generateConversationList();
+</script>
 </body>
 </html>
 {{end}}

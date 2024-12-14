@@ -1,15 +1,19 @@
 package main
 
 import (
+	"embed"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"html/template"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"qwen/internal"
 	"qwen/internal/config"
 	"syscall"
 )
+
+//go:embed view/templates/**/*.html
+var content embed.FS
 
 func main() {
 	config.InitConfig()
@@ -19,9 +23,9 @@ func main() {
 
 	r := gin.Default()
 
-	dir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
-	fmt.Println(dir)
-	r.LoadHTMLGlob("view/templates/**/*.html")
+	//r.LoadHTMLGlob("view/templates/**/*.html")
+	// 加载嵌入的 HTML 文件
+	r.SetHTMLTemplate(template.Must(template.New("").ParseFS(content, "view/templates/**/*.html")))
 
 	internal.InitRooter(r)
 

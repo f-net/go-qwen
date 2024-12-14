@@ -10,24 +10,24 @@ import (
 )
 
 func GetAssistantThreadList(c *gin.Context) {
-	var req = &types.ListAssistantReq{}
+	var req = &types.ListAssistantThreadReq{}
 	err := c.ShouldBind(req)
 	if err != nil {
 		ErrorResp(c, err)
 		return
 	}
 
-	req.InitPageSize()
+	//req.InitPageSize()
 
-	resp, err := logic.NewAssistantLogic(config.GetDB()).List(context.Background(), req)
+	resp, err := logic.NewAssistantThreadLogic(config.GetDB()).List(context.Background(), req)
 	if err != nil {
 		ErrorResp(c, err)
 		return
 	}
 	//SuccessResp(c, resp)
 	data, _ := json.Marshal(resp)
-	c.HTML(200, "assistant/list.html", map[string]interface{}{
-		"title": "助手列表",
+	c.HTML(200, "assistant/chat/list.html", map[string]interface{}{
+		"title": "助手会话",
 		"data":  string(data),
 	})
 }

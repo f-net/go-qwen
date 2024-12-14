@@ -6,7 +6,7 @@ import (
 )
 
 func InitRooter(rooter *gin.Engine) {
-
+	rooter.GET("", handle.GetAssistantList)
 	assistantRoter := rooter.Group("/assistant")
 	assistantRoter.POST("", handle.CreateAssistant)
 
@@ -15,9 +15,11 @@ func InitRooter(rooter *gin.Engine) {
 	assistantRoter.GET("", handle.GetAssistant)
 	assistantRoter.GET("list", handle.GetAssistantList)
 
-	//chatRoter := assistantRoter.Group("/chat")
-	//chatRoter.GET("list", handle.ChatList)
+	threadRooter := assistantRoter.Group("/thread")
+	threadRooter.GET("list", handle.GetAssistantThreadList)
 
-	assistantRoter.Group("/message")
+	messageRooter := threadRooter.Group("/message")
+	messageRooter.GET("list", handle.GetMessageOnAssistantList)
+	messageRooter.POST("send", handle.SendMessageOnAssistant)
 
 }

@@ -117,7 +117,7 @@
                     <button class="button view-button" onclick="showViewModal(${item.id})">查看</button>
                     <button class="button edit-button" onclick="showEditModal(${item.id})">修改</button>
                     <button class="button delete-button" onclick="confirmDelete(${item.id})">删除</button>
-                    <button class="button chat-button" onclick="startChat()">对话</button>
+                    <button class="button chat-button" onclick="startChat(${item.id})">对话</button>
                 </td>
             </tr>`;
     });
@@ -126,8 +126,9 @@
     document.body.innerHTML += tableHtml;
 
     // 跳转到对话页面
-    function startChat() {
-        window.location.href = "/assistant/chat/list";
+    function startChat(id) {
+        console.log("log"+id)
+        window.location.href = "/assistant/thread/list?assistantId=" + encodeURIComponent(id);
     }
 
     // 确认删除

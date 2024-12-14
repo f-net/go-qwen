@@ -7,9 +7,15 @@
 https://help.aliyun.com/zh/model-studio/getting-started/first-api-call-to-qwen
 # apifox 共享链接
 https://apifox.com/apidoc/shared-78492d5a-83f6-479c-99cb-e7d18a80fcf6
-
-##
+## 直接使用
 ```
+go-qwen目录下的：go-qwen.zip可以直接解压，在config文件修改apikey为自己的阿里云key,点击exe即可运行，浏览器使用
+```
+
+## 环境配置
+```
+由于使用sqlite需要cgo，所以需要配置cgo
+
 go env -w CGO_ENABLED=1
 gcc 下载地址:
     https://zenlayer.dl.sourceforge.net/project/mingw-w64/Toolchains%20targetting%20Win64/Personal%20Builds/mingw-builds/8.1.0/threads-posix/seh/x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z?viasf=1
@@ -20,16 +26,18 @@ gcc 下载地址:
 ## internal 结构
 ```
 go-qwen/
-└── internal/
-  ├── config/   配置文件操作
-  ├── doce/     文档:数据库sql,  接口文档json-可导入apifox
-  ├── handle/   接收层
-  ├── logic/    逻辑层
-  ├── model/    模型层
-  ├── repo/     持久层
-  ├── types/    请求-返回体
-  ├── utils/    工具包
-  └── root.go   路由组
+├── internal/
+├  ├── config/   配置文件操作
+├  ├── doce/     文档:数据库sql,  接口文档json-可导入apifox
+├  ├── handle/   接收层
+├  ├── logic/    逻辑层
+├  ├── model/    模型层
+├  ├── repo/     持久层
+├  ├── types/    请求-返回体
+├  ├── utils/    工具包
+├  └── root.go   路由组
+└──view/
+ └── tmplates/  前端页面
 ```
 
 

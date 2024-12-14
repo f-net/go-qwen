@@ -7,7 +7,6 @@ import (
 	"qwen/internal/config"
 	"qwen/internal/repo"
 	"qwen/internal/types"
-	"qwen/internal/utils"
 )
 
 type (
@@ -46,6 +45,6 @@ func (l *assistantThreadLogic) List(ctx context.Context, req *types.ListAssistan
 		Page:      req.Page,
 		Size:      req.Size,
 		Total:     total,
-		TotalPage: utils.GetTotalPage(total, req.Size),
+		TotalPage: 1,
 	}, nil
 }

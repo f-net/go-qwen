@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
 	"qwen/internal/model"
 	"qwen/internal/types"
@@ -12,9 +13,9 @@ type (
 		db *gorm.DB
 	}
 	IThreadRepo interface {
-		First(ctx context.Context, id int64) (*model.AssistantThread, error)
-		Create(ctx context.Context, thread *model.AssistantThread) error
-		List(ctx context.Context, req *types.ListAssistantThreadReq) ([]*model.AssistantThread, int64, error)
+		First(ctx context.Context, id int64) (*model.Thread, error)
+		Create(ctx context.Context, thread *model.Thread) error
+		List(ctx context.Context, req *types.ListAssistantThreadReq) ([]*model.Thread, int64, error)
 	}
 )
 
@@ -24,26 +25,29 @@ func NewThreadRepo(db *gorm.DB) IThreadRepo {
 	}
 }
 
-func (repo *threadRepo) First(ctx context.Context, id int64) (*model.AssistantThread, error) {
-	var assistant model.AssistantThread
+func (repo *threadRepo) First(ctx context.Context, id int64) (*model.Thread, error) {
+	var assistant model.Thread
 	err := repo.db.Where("id", id).First(&assistant).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
 	if err != nil {
 		return nil, err
 	}
 	return &assistant, nil
 }
-func (repo *threadRepo) Create(ctx context.Context, thread *model.AssistantThread) error {
+func (repo *threadRepo) Create(ctx context.Context, thread *model.Thread) error {
 
 	return repo.db.Create(thread).Error
 }
 
-func (repo *threadRepo) List(ctx context.Context, req *types.ListAssistantThreadReq) ([]*model.AssistantThread, int64, error) {
+func (repo *threadRepo) List(ctx context.Context, req *types.ListAssistantThreadReq) ([]*model.Thread, int64, error) {
 	var (
 		err   error
 		total int64
-		list  []*model.AssistantThread
+		list  []*model.Thread
 	)
-	query := repo.db.Model(&model.AssistantThread{})
+	query := repo.db.Model(&model.Thread{}).Debug().Order("id desc")
 	if req.AssistantId != 0 {
 		query = query.Where("assistant_id", req.AssistantId)
 	}
@@ -54,6 +58,6 @@ func (repo *threadRepo) List(ctx context.Context, req *types.ListAssistantThread
 	if err != nil {
 		return nil, 0, err
 	}
-	err = query.Limit(req.Size).Offset(req.Offset).Find(&list).Error
+	err = query.Find(&list).Error
 	return list, total, err
 }
