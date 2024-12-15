@@ -25,6 +25,9 @@ func InitConfig() {
 		if err = v.Unmarshal(&config); err != nil {
 			fmt.Println(err)
 		}
+		//InitMysql()
+		InitSqlite()
+		InitOpenaiClient()
 	})
 	if err = v.Unmarshal(&config); err != nil {
 		fmt.Println(err)
